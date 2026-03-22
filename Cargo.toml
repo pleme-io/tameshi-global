@@ -1,0 +1,71 @@
+[package]
+name = "tameshi-global"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.89.0"
+authors = ["Pleme Team <team@pleme.io>"]
+description = "Tameshi Global State Root — master server aggregating cluster attestation roots into a BLAKE3-linked chain"
+license = "MIT"
+repository = "https://github.com/pleme-io/tameshi-global"
+homepage = "https://github.com/pleme-io/tameshi-global"
+readme = "README.md"
+keywords = ["attestation", "integrity", "blake3", "global-state", "federation"]
+categories = ["cryptography", "web-programming::http-server"]
+
+[[bin]]
+name = "tameshi-global"
+path = "src/main.rs"
+
+[lib]
+name = "tameshi_global"
+path = "src/lib.rs"
+
+[dependencies]
+# Cryptographic hashing
+blake3 = "1.8"
+const-hex = "1"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Time and identifiers
+chrono = { version = "0.4", features = ["serde"] }
+
+# Async runtime
+tokio = { version = "1.50", features = ["full"] }
+
+# HTTP server
+axum = "0.8"
+
+# HTTP client (for remediation fan-out)
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+
+# Configuration (layered: defaults -> YAML -> envvars)
+figment = { version = "0.10", features = ["yaml", "env"] }
+
+# Error handling
+thiserror = "2.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Metrics
+prometheus = "0.13"
+
+# Tower (middleware)
+tower = "0.5"
+tower-http = { version = "0.6", features = ["trace", "cors"] }
+
+[lints.clippy]
+pedantic = "warn"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true
