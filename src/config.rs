@@ -1,7 +1,5 @@
-//! Configuration loading via figment (defaults -> YAML -> env).
+//! Configuration loading via shikumi's ProviderChain (defaults -> YAML -> env).
 
-use figment::providers::{Env, Format, Serialized, Yaml};
-use figment::Figment;
 use serde::{Deserialize, Serialize};
 
 /// Server configuration.
@@ -43,15 +41,14 @@ impl Default for Config {
 ///
 /// Returns an error if the configuration cannot be loaded or parsed.
 pub fn load_config(yaml_path: Option<&str>) -> crate::error::Result<Config> {
-    let mut figment = Figment::from(Serialized::defaults(Config::default()));
+    let mut chain = shikumi::ProviderChain::new().with_defaults(&Config::default());
 
     if let Some(path) = yaml_path {
-        figment = figment.merge(Yaml::file(path));
+        chain = chain.with_file(std::path::Path::new(path));
     }
 
-    figment = figment.merge(Env::prefixed("TAMESHI_GLOBAL_").split("__"));
-
-    figment
+    chain
+        .with_env("TAMESHI_GLOBAL_")
         .extract()
         .map_err(|e| crate::error::Error::Config(e.to_string()))
 }

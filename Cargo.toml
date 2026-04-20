@@ -41,8 +41,10 @@ axum = "0.8"
 # HTTP client (for remediation fan-out)
 reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
 
-# Configuration (layered: defaults -> YAML -> envvars)
-figment = { version = "0.10", features = ["yaml", "env"] }
+# Configuration (layered: defaults -> YAML -> envvars) via shikumi,
+# the pleme-io standard. shikumi wraps figment so this crate doesn't
+# have to depend on figment directly.
+shikumi = { git = "https://github.com/pleme-io/shikumi" }
 
 # Error handling
 thiserror = "2.0"
